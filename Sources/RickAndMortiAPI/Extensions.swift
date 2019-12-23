@@ -98,7 +98,7 @@ extension UUID: JSONEncodable {
         return self.uuidString
     }
 }
-/*
+
 extension String: CodingKey {
 
     public var stringValue: String {
@@ -117,7 +117,7 @@ extension String: CodingKey {
         return nil
     }
 
-}*/
+}
 
 extension KeyedEncodingContainerProtocol {
 

@@ -28,9 +28,9 @@ open class StatusAPI {
      - parameter status: (query) status of character 
      - returns: RequestBuilder<PersonList> 
      */
-    open class func callGetWithRequestBuilder(status: Status) -> RequestBuilderForRAM<PersonList> {
+    open class func callGetWithRequestBuilder(status: Status) -> RequestBuilder<PersonList> {
         let path = "/"
-        let URLString = RickAndMortiAPI.basePath + path
+        let URLString = OpenAPIClientAPI.basePath + path
         let parameters: [String:Any]? = nil
         
         var url = URLComponents(string: URLString)
@@ -38,7 +38,7 @@ open class StatusAPI {
             "status": status.encodeToJSON()
         ])
 
-        let requestBuilder: RequestBuilderForRAM<PersonList>.Type = RickAndMortiAPI.requestBuilderFactory.getBuilder()
+        let requestBuilder: RequestBuilder<PersonList>.Type = OpenAPIClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: (url?.string ?? URLString), parameters: parameters, isBody: false)
     }

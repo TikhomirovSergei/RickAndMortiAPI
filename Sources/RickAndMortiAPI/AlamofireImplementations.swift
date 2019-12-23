@@ -7,13 +7,13 @@
 import Foundation
 import Alamofire
 
-class AlamofireRequestBuilderFactoryForRAM: RequestBuilderFactoryForRAM {
-    func getNonDecodableBuilder<T>() -> RequestBuilderForRAM<T>.Type {
-        return AlamofireRequestBuilderForRAM<T>.self
+class AlamofireRequestBuilderFactory: RequestBuilderFactory {
+    func getNonDecodableBuilder<T>() -> RequestBuilder<T>.Type {
+        return AlamofireRequestBuilder<T>.self
     }
 
-    func getBuilder<T:Decodable>() -> RequestBuilderForRAM<T>.Type {
-        return AlamofireDecodableRequestBuilderForRAM<T>.self
+    func getBuilder<T:Decodable>() -> RequestBuilder<T>.Type {
+        return AlamofireDecodableRequestBuilder<T>.self
     }
 }
 
@@ -49,7 +49,7 @@ private struct SynchronizedDictionary<K: Hashable, V> {
 // Store manager to retain its reference
 private var managerStore = SynchronizedDictionary<String, Alamofire.SessionManager>()
 
-open class AlamofireRequestBuilderForRAM<T>: RequestBuilderForRAM<T> {
+open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
     required public init(method: String, URLString: String, parameters: [String : Any]?, isBody: Bool, headers: [String : String] = [:]) {
         super.init(method: method, URLString: URLString, parameters: parameters, isBody: isBody, headers: headers)
     }
@@ -157,7 +157,7 @@ open class AlamofireRequestBuilderForRAM<T>: RequestBuilderForRAM<T> {
 
         switch T.self {
         case is String.Type:
-            validatedRequest.responseString(queue: RickAndMortiAPI.apiResponseQueue, completionHandler: { (stringResponse) in
+            validatedRequest.responseString(queue: OpenAPIClientAPI.apiResponseQueue, completionHandler: { (stringResponse) in
                 cleanupRequest()
 
                 if stringResponse.result.isFailure {
@@ -177,7 +177,7 @@ open class AlamofireRequestBuilderForRAM<T>: RequestBuilderForRAM<T> {
                 )
             })
         case is URL.Type:
-            validatedRequest.responseData(queue: RickAndMortiAPI.apiResponseQueue, completionHandler: { (dataResponse) in
+            validatedRequest.responseData(queue: OpenAPIClientAPI.apiResponseQueue, completionHandler: { (dataResponse) in
                 cleanupRequest()
 
                 do {
@@ -227,7 +227,7 @@ open class AlamofireRequestBuilderForRAM<T>: RequestBuilderForRAM<T> {
                 return
             })
         case is Void.Type:
-            validatedRequest.responseData(queue: RickAndMortiAPI.apiResponseQueue, completionHandler: { (voidResponse) in
+            validatedRequest.responseData(queue: OpenAPIClientAPI.apiResponseQueue, completionHandler: { (voidResponse) in
                 cleanupRequest()
 
                 if voidResponse.result.isFailure {
@@ -246,7 +246,7 @@ open class AlamofireRequestBuilderForRAM<T>: RequestBuilderForRAM<T> {
                 )
             })
         default:
-            validatedRequest.responseData(queue: RickAndMortiAPI.apiResponseQueue, completionHandler: { (dataResponse) in
+            validatedRequest.responseData(queue: OpenAPIClientAPI.apiResponseQueue, completionHandler: { (dataResponse) in
                 cleanupRequest()
 
                 if dataResponse.result.isFailure {
@@ -344,7 +344,7 @@ public enum AlamofireDecodableRequestBuilderError: Error {
     case generalError(Error)
 }
 
-open class AlamofireDecodableRequestBuilderForRAM<T:Decodable>: AlamofireRequestBuilderForRAM<T> {
+open class AlamofireDecodableRequestBuilder<T:Decodable>: AlamofireRequestBuilder<T> {
 
     override fileprivate func processRequest(request: DataRequest, _ managerId: String, _ completion: @escaping (_ response: Response<T>?, _ error: Error?) -> Void) {
         if let credential = self.credential {
@@ -359,7 +359,7 @@ open class AlamofireDecodableRequestBuilderForRAM<T:Decodable>: AlamofireRequest
 
         switch T.self {
         case is String.Type:
-            validatedRequest.responseString(queue: RickAndMortiAPI.apiResponseQueue, completionHandler: { (stringResponse) in
+            validatedRequest.responseString(queue: OpenAPIClientAPI.apiResponseQueue, completionHandler: { (stringResponse) in
                 cleanupRequest()
 
                 if stringResponse.result.isFailure {
@@ -379,7 +379,7 @@ open class AlamofireDecodableRequestBuilderForRAM<T:Decodable>: AlamofireRequest
                 )
             })
         case is Void.Type:
-            validatedRequest.responseData(queue: RickAndMortiAPI.apiResponseQueue, completionHandler: { (voidResponse) in
+            validatedRequest.responseData(queue: OpenAPIClientAPI.apiResponseQueue, completionHandler: { (voidResponse) in
                 cleanupRequest()
 
                 if voidResponse.result.isFailure {
@@ -398,7 +398,7 @@ open class AlamofireDecodableRequestBuilderForRAM<T:Decodable>: AlamofireRequest
                 )
             })
         case is Data.Type:
-            validatedRequest.responseData(queue: RickAndMortiAPI.apiResponseQueue, completionHandler: { (dataResponse) in
+            validatedRequest.responseData(queue: OpenAPIClientAPI.apiResponseQueue, completionHandler: { (dataResponse) in
                 cleanupRequest()
 
                 if dataResponse.result.isFailure {
@@ -418,7 +418,7 @@ open class AlamofireDecodableRequestBuilderForRAM<T:Decodable>: AlamofireRequest
                 )
             })
         default:
-            validatedRequest.responseData(queue: RickAndMortiAPI.apiResponseQueue, completionHandler: { (dataResponse: DataResponse<Data>) in
+            validatedRequest.responseData(queue: OpenAPIClientAPI.apiResponseQueue, completionHandler: { (dataResponse: DataResponse<Data>) in
                 cleanupRequest()
 
                 guard dataResponse.result.isSuccess else {

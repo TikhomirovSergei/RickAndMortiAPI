@@ -6,15 +6,15 @@
 
 import Foundation
 
-open class RickAndMortiAPI {
+open class OpenAPIClientAPI {
     public static var basePath = "https://rickandmortyapi.com/api/character"
     public static var credential: URLCredential?
     public static var customHeaders: [String:String] = [:]
-    public static var requestBuilderFactory: RequestBuilderFactoryForRAM = AlamofireRequestBuilderFactoryForRAM()
+    public static var requestBuilderFactory: RequestBuilderFactory = AlamofireRequestBuilderFactory()
     public static var apiResponseQueue: DispatchQueue = .main
 }
 
-open class RequestBuilderForRAM<T> {
+open class RequestBuilder<T> {
     var credential: URLCredential?
     var headers: [String:String]
     public let parameters: [String:Any]?
@@ -32,7 +32,7 @@ open class RequestBuilderForRAM<T> {
         self.isBody = isBody
         self.headers = headers
 
-        addHeaders(RickAndMortiAPI.customHeaders)
+        addHeaders(OpenAPIClientAPI.customHeaders)
     }
 
     open func addHeaders(_ aHeaders:[String:String]) {
@@ -51,12 +51,12 @@ open class RequestBuilderForRAM<T> {
     }
 
     open func addCredential() -> Self {
-        self.credential = RickAndMortiAPI.credential
+        self.credential = OpenAPIClientAPI.credential
         return self
     }
 }
 
-public protocol RequestBuilderFactoryForRAM {
-    func getNonDecodableBuilder<T>() -> RequestBuilderForRAM<T>.Type
-    func getBuilder<T:Decodable>() -> RequestBuilderForRAM<T>.Type
+public protocol RequestBuilderFactory {
+    func getNonDecodableBuilder<T>() -> RequestBuilder<T>.Type
+    func getBuilder<T:Decodable>() -> RequestBuilder<T>.Type
 }
